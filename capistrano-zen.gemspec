@@ -8,12 +8,17 @@ Gem::Specification.new do |gem|
   gem.version       = Capistrano::Zen::VERSION
   gem.authors       = ["Steven Yang"]
   gem.email         = ["yangchenyun@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{Capistrano Recipes used at zenhacks.org.}
+  gem.summary       = %q{Nginx, Unicorn, PostgreSQL, NodeJS Recipes install on a machine running Ubuntu. }
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+  gem.extra_rdoc_files = [
+    "LICENSE"
+  ]
+  
+  gem.add_dependency "capistrano", "~> 2.0"
 end
