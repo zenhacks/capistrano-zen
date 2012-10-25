@@ -6,7 +6,7 @@ configuration = Capistrano::Configuration.respond_to?(:instance) ?
 
 configuration.load do
 
-  DB_FILE_PATH = "#{app_root_path}/config/database.yml"
+  DB_FILE_PATH = "#{config_path}/database.yml"
   DBCONFIG = YAML.load_file(DB_FILE_PATH)
 
   _cset(:postgresql_host, "localhost")
