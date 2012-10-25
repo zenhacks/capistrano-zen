@@ -19,6 +19,6 @@ Gem::Specification.new do |gem|
   gem.extra_rdoc_files = [
     "LICENSE"
   ]
-  
-  gem.add_dependency "capistrano", "~> 2.0"
+
+  gem.add_dependency "capistrano", ">= 2.5.3"
 end
