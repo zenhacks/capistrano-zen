@@ -1,0 +1,30 @@
+upstream <%= application %>_unicorn {
+  server unix:/tmp/unicorn.<%= application %>.sock fail_timeout=0;
+}
+
+server {
+  listen 80 default deferred;
+  server_name <%= domain %>;
+
+  root <%= current_path %>/public;
+
+  location ^~ /assets/ {
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+  }
+
+  # try to serve static file first
+  try_files $uri/index.html $uri @unicorn;
+
+  location @unicorn {
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
+    proxy_redirect off;
+    proxy_pass http://<%= application %>_unicorn;
+  }
+
+  error_page  500 502 503 504 /500.html;
+  client_max_body_size 100M;
+  keepalive_timeout 10;
+}
