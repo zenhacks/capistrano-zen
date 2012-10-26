@@ -50,11 +50,11 @@ Or install it yourself as:
 ## Dependencies
 `capistrano-zen` uses `python-software-properties` to ease ppa source addition. You could install it with  use `python-software-properties` to ease ppa source addition. You could install it from your local machine with 
 
-  cap deploy:install
+    cap deploy:install
 
 Or install it mannually with 
 
-  sudo apt-get install python-software-properties
+    sudo apt-get install python-software-properties
 
 ## Usage
 
