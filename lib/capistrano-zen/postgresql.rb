@@ -7,13 +7,14 @@ configuration = Capistrano::Configuration.respond_to?(:instance) ?
 
 configuration.load do
 
-  DB_FILE_PATH = "#{config_path}/database.yml"
+  DB_FILE_PATH = "#{pg_config_path}/database.yml"
   DBCONFIG = YAML.load_file(DB_FILE_PATH)
 
   _cset(:postgresql_host, "localhost")
   _cset(:postgresql_user) { DBCONFIG['production']['username'] }
   _cset(:postgresql_password) { DBCONFIG['production']['password'] }
   _cset(:postgresql_database) { DBCONFIG['production']['database'] }
+  _cset(:pg_config_path) { abort "[Error] posgtresql recipes need `pg_config_path` to find the database.yml file." }
 
   namespace :pg do
     desc "Install the latest stable release of PostgreSQL."
