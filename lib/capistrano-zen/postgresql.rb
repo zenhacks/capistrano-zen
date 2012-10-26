@@ -1,3 +1,4 @@
+require 'capistrano-zen/base'
 require 'yaml'
 
 configuration = Capistrano::Configuration.respond_to?(:instance) ?
