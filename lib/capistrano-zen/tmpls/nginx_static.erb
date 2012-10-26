@@ -2,12 +2,11 @@ server {
   listen 80 default deferred;
   server_name <%= domain %>;
 
+  root <%= deploy_to %>;
+  gzip_static on;
 
-  location / {
-    root <%= deploy_to %>;
-    gzip_static on;
-    index index.html;
-  }
+  access_log  /var/log/nginx/<%= application %>-access.log;
+  error_log  /var/log/nginx/<%= application %>-error.log;
 
   error_page  500 502 503 504 /500.html;
 }

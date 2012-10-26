@@ -6,6 +6,9 @@ server {
   listen 80 default deferred;
   server_name <%= domain %>;
 
+  access_log  /var/log/nginx/<%= application %>-access.log;
+  error_log  /var/log/nginx/<%= application %>-error.log;
+
   root <%= current_path %>/public;
 
   location ^~ /assets/ {
