@@ -1,0 +1,13 @@
+server {
+  listen 80 default deferred;
+  server_name <%= domain %>;
+
+
+  location / {
+    root <%= deploy_to %>;
+    gzip_static on;
+    index index.html;
+  }
+
+  error_page  500 502 503 504 /500.html;
+}

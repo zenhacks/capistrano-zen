@@ -11,14 +11,23 @@ configuration.load do
       run "#{sudo} add-apt-repository -y ppa:nginx/stable"
       run "#{sudo} apt-get -y update"
       run "#{sudo} apt-get -y install nginx"
+      run "#{sudo} rm -f /etc/nginx/sites-enabled/default"
     end
 
-    desc "Setup nginx configuration for unicorn application"
-    task :setup, roles: :web do
-      template "nginx_unicorn.erb", "/tmp/nginx_conf"
-      run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-enabled/#{application}"
-      run "#{sudo} rm -f /etc/nginx/sites-enabled/default"
-      restart
+    namespace :setup do
+      desc "Setup nginx configuration for unicorn application"
+      task :unicorn, roles: :web do
+        template "nginx_unicorn.erb", "/tmp/nginx_conf"
+        run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-enabled/#{application}"
+        restart
+      end
+
+      desc "Setup nginx configuration for static website"
+      task :static, roles: :web do
+        template "nginx_static.erb", "/tmp/nginx_conf"
+        run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-enabled/#{application}"
+        restart
+      end
     end
 
     %w[start stop restart reload].each do |command|
