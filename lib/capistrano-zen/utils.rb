@@ -23,10 +23,10 @@ configuration.load do
   namespace :dev_lib do
     task :install do
       # nokogiri dependencies
-      run "#{sudo} apt-get install libxslt-dev libxml2-dev"
+      run "#{sudo} apt-get -y install libxslt-dev libxml2-dev"
 
       # paperclip dependencies
-      run "#{sudo} apt-get install imagemagick"
+      run "#{sudo} apt-get -y install imagemagick"
     end
   end
 end

@@ -37,7 +37,7 @@ configuration.load do
     task :patch, roles: :app do
       # the performance patch
       # https://gist.github.com/1688857?utm_source=rubyweekly&utm_medium=email
-      run "#{sudo} apt-get install autoconf"
+      run "#{sudo} apt-get -y install autoconf"
       case "#{ruby_version}"
       when "1.9.3-p194"
         run "curl https://raw.github.com/gist/1688857/rbenv.sh | sh ; rbenv global 1.9.3-p194-perf"
