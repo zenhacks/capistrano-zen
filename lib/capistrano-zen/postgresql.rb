@@ -12,7 +12,7 @@ configuration.load do
   DB_FILE_PATH = "#{pg_config_path}/database.yml"
   DBCONFIG = YAML.load_file(DB_FILE_PATH)
 
-  _cset(:postgresql_user) { DBCONFIG['production']['host'] }
+  _cset(:postgresql_host) { DBCONFIG['production']['host'] }
   _cset(:postgresql_user) { DBCONFIG['production']['username'] }
   _cset(:postgresql_password) { DBCONFIG['production']['password'] }
   _cset(:postgresql_database) { DBCONFIG['production']['database'] }
