@@ -27,6 +27,9 @@ configuration.load do
 
       # paperclip dependencies
       run "#{sudo} apt-get -y install imagemagick"
+
+      # sqlite3 dependencies
+      run "#{sudo} apt-get -y install libsqlite3-dev"
     end
   end
 end
