@@ -115,7 +115,8 @@ Currently, postgresql configuration is tightly attached to a rails application, 
 Default role: `db`
 
 Configuration variables:
-- `pg_config_path` the path for the `database.yml` file, the recipe reads from it to create database and generate remote `database.yml`.
+- `pg_config_path` the path for the `database.yml` file, the recipe reads from it to create database and generate remote `database.yml`. If you are using this recipe out of Rails application, store your configuration in a `config/database.yml`. 
+- `pg_backup_path` the path to store database dumps.
 
 Tasks:
 - `pg:install` installs `postgresql` and `libpg-dev` from `ppa:pitti/postgresql`.
@@ -123,6 +124,7 @@ Tasks:
 - `pg:init` generates roles and databases for the rails application.
 - `pg:setup` generates remote `database.yml` based on local `database.yml`'s `production` settings.
 - `pg:symlink` creates symbolic for the `database.yml` in the release.
+- `pg:dump` dumps and compresses the application database, store them in the `pg_backup_path`.
 
 ### Unicorn
 This recipes setup unicorn configuration based on current rails application, and generate a `init.d` control scripts to manage the service.
