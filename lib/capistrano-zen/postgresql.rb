@@ -27,14 +27,14 @@ configuration.load do
     end
 
     desc "Create a database for this application."
-    task :init, roles: :db, only: {primary: true} do
+    task :init, roles: :db, only: { primary: true } do
       # reset the database and role
       run %Q{#{sudo} -u postgres psql -c "CREATE USER #{postgresql_user} WITH PASSWORD '#{postgresql_password}';"}
       run %Q{#{sudo} -u postgres psql -c "CREATE DATABASE #{postgresql_database} OWNER #{postgresql_user};"}
     end
 
     desc "Reset the database and role for this application."
-    task :reset, roles: :db, only: {primary: true} do
+    task :reset, roles: :db, only: { primary: true } do
       # drop the database and role
       run %Q{#{sudo} -u postgres psql -c "DROP DATABASE #{postgresql_database};"}
       run %Q{#{sudo} -u postgres psql -c "DROP ROLE #{postgresql_user};"}
