@@ -8,6 +8,7 @@ configuration = Capistrano::Configuration.respond_to?(:instance) ?
 configuration.load do
 
   _cset(:pg_config_path) { abort "[Error] posgtresql recipes need `pg_config_path` to find the database.yml file." }
+  _cset(:pg_backup_path) { abort "[Error] posgtresql recipes need `pg_backup_path` to execute backups." }
 
   DB_FILE_PATH = "#{pg_config_path}/database.yml"
   DBCONFIG = YAML.load_file(DB_FILE_PATH)
@@ -48,6 +49,15 @@ configuration.load do
     desc "Symlink the database.yml file into latest release"
     task :symlink, roles: :app do
       run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+    end
+
+    desc "Dump the application's database to backup path."
+    task :dump, roles: :db, only: { primary: true } do
+      # ignore migrations / exclude ownership / clean restore
+      run "pg_dump #{postgresql_database} -T '*migrations' -O -c -U #{postgresql_user} -h localhost | gzip > #{pg_backup_path}/#{application}-#{release_name}.sql.gz" do |channel, stream, data|
+        puts data if data.length >= 3
+        channel.send_data("#{postgresql_password}\n") if data.include? 'Password'
+      end
     end
   end
 end
