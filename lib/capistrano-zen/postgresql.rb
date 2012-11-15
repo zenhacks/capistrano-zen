@@ -44,6 +44,10 @@ configuration.load do
     task :setup, roles: :app do
       run "mkdir -p #{shared_path}/config"
       template "postgresql.yml.erb", "#{shared_path}/config/database.yml"
+      # init backup directory
+      run "#{sudo} mkdir -p #{pg_backup_path}"
+      run "#{sudo} chown :#{group} #{pg_backup_path}"
+      run "#{sudo} chmod g+w #{pg_backup_path}"
     end
 
     desc "Symlink the database.yml file into latest release"
