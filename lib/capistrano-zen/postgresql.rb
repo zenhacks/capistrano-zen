@@ -63,5 +63,19 @@ configuration.load do
         channel.send_data("#{psql_password}\n") if data.include? 'Password'
       end
     end
+
+    desc "Restore the application's database from dump files."
+    task :restore, roles: :db, only: { primary: true } do
+      backups = capture("ls -x #{pg_backup_path}").split.sort
+      default_backup = backups.last
+      puts "Available backups: "
+      puts backups
+      backup = Capistrano::CLI.ui.ask "Which backup would you like to restore? [#{default_backup}] "
+      backup = backups.last if backup.empty?
+      run "gunzip -c #{pg_backup_path}/#{backup} | psql -d #{psql_database} -U #{psql_user} -h #{psql_host}" do |channel, stream, data|
+        puts data if data.length >= 3
+        channel.send_data("#{psql_password}\n") if data.include? 'Password'
+      end
+    end
   end
 end
