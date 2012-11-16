@@ -24,16 +24,15 @@ configuration.load do
   _cset(:psql_database_dev) { DBCONFIG['development']['database'] }
 
   namespace :pg do
-    desc "Install the latest stable release of psql."
+    desc "Install the latest stable release of PostgreSQL."
     task :install, roles: :db, only: {primary: true} do
-      run "#{sudo} add-apt-repository -y ppa:pitti/psql"
+      run "#{sudo} add-apt-repository -y ppa:pitti/postgresql"
       run "#{sudo} apt-get -y update"
-      run "#{sudo} apt-get -y install psql libpq-dev"
+      run "#{sudo} apt-get -y install postgresql libpq-dev"
     end
 
     desc "Create a database for this application."
     task :init, roles: :db, only: { primary: true } do
-      # reset the database and role
       run %Q{#{sudo} -u postgres psql -c "CREATE USER #{psql_user} WITH PASSWORD '#{psql_password}';"}
       run %Q{#{sudo} -u postgres psql -c "CREATE DATABASE #{psql_database} OWNER #{psql_user};"}
     end
