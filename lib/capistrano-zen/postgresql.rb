@@ -98,6 +98,20 @@ configuration.load do
       end
     end
 
+    task :cleanup, roles: :db, only: { primary: true } do
+      count = fetch(:pg_keep_backups, 10).to_i
+      local_backups = capture("ls -xt #{pg_backup_path}").split.reverse
+      if count >= local_backups.length
+        logger.important "no old backups to clean up"
+      else
+        logger.info "keeping #{count} of #{local_backups.length} backups"
+        directories = (local_backups - local_backups.last(count)).map { |release|
+          File.join(pg_backup_path, release) }.join(" ")
+
+        try_sudo "rm -rf #{directories}"
+      end
+    end
+
     # private tasks
     task :list_remote, roles: :db, only: { primary: true } do
       backups = capture("ls -x #{pg_backup_path}").split.sort

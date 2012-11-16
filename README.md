@@ -130,6 +130,7 @@ Tasks:
 - `pg:put` upload the local dumps in `/tmp` to the remote server
 - `pg:restore:remote` On the remote machine, restores selected dumps from the `pg_backup_path`, it defaults to lastest dump.
 - `pg:restore:local` On the local machine, restores selected dumps from the `/tmp`, it defaults to lastest dump.
+- `pg:cleanup` cleans up old backups while keep `pg_keep_backups` numbers of backups.
 
 ### Unicorn
 This recipes setup unicorn configuration based on current rails application, and generate a `init.d` control scripts to manage the service.
