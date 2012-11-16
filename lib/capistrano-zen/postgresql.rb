@@ -18,6 +18,11 @@ configuration.load do
   _cset(:psql_password) { DBCONFIG['production']['password'] }
   _cset(:psql_database) { DBCONFIG['production']['database'] }
 
+  _cset(:psql_host_dev) { DBCONFIG['development']['host'] }
+  _cset(:psql_user_dev) { DBCONFIG['development']['username'] }
+  _cset(:psql_password_dev) { DBCONFIG['development']['password'] }
+  _cset(:psql_database_dev) { DBCONFIG['development']['database'] }
+
   namespace :pg do
     desc "Install the latest stable release of psql."
     task :install, roles: :db, only: {primary: true} do
@@ -64,18 +69,52 @@ configuration.load do
       end
     end
 
-    desc "Restore the application's database from dump files."
-    task :restore, roles: :db, only: { primary: true } do
+    desc "Get the remote dump to local /tmp directory."
+    task :get, roles: :db, only: { primary: true } do
+      list_remote
+      download "#{pg_backup_path}/#{backup}", "/tmp/#{backup}", :once => true
+    end
+
+    desc "Put the local dump in /tmp to remote backups."
+    task :put, roles: :db, only: { primary: true } do
+      list_local
+      upload "/tmp/#{backup}", "#{pg_backup_path}/#{backup}"
+    end
+
+    namespace :restore do
+      desc "Restore the remote database from dump files."
+      task :remote, roles: :db, only: { primary: true } do
+        list_remote
+        run "gunzip -c #{pg_backup_path}/#{backup} | psql -d #{psql_database} -U #{psql_user} -h #{psql_host}" do |channel, stream, data|
+          puts data if data.length >= 3
+          channel.send_data("#{psql_password}\n") if data.include? 'Password'
+        end
+      end
+
+      desc "Restore the local database from dump files."
+      task :local do
+        list_local
+        run_locally "gunzip -c /tmp/#{backup} | psql -d #{psql_database_dev} -U #{psql_user_dev} -h #{psql_host_dev}"
+      end
+    end
+
+    # private tasks
+    task :list_remote, roles: :db, only: { primary: true } do
       backups = capture("ls -x #{pg_backup_path}").split.sort
       default_backup = backups.last
       puts "Available backups: "
       puts backups
-      backup = Capistrano::CLI.ui.ask "Which backup would you like to restore? [#{default_backup}] "
-      backup = backups.last if backup.empty?
-      run "gunzip -c #{pg_backup_path}/#{backup} | psql -d #{psql_database} -U #{psql_user} -h #{psql_host}" do |channel, stream, data|
-        puts data if data.length >= 3
-        channel.send_data("#{psql_password}\n") if data.include? 'Password'
-      end
+      backup = Capistrano::CLI.ui.ask "Which backup would you like to choose? [#{default_backup}] "
+      set :backup, backups.last if backup.empty?
+    end
+
+    task :list_local do
+      backups = `ls -x /tmp | grep -e '.sql.gz$'`.split.sort
+      default_backup = backups.last
+      puts "Available local backups: "
+      puts backups
+      backup = Capistrano::CLI.ui.ask "Which backup would you like to choose? [#{default_backup}] "
+      set :backup, backups.last if backup.empty?
     end
   end
 end
