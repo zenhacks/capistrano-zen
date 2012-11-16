@@ -4,6 +4,7 @@
 It provides installation and management recipes for the following service:
 - nginx
   - with config templates for rails app
+  - static website template
 - nodejs
 - postgresql
 - unicorn (integrated with a nginx/railsapp)
@@ -12,7 +13,6 @@ It provides installation and management recipes for the following service:
 The upcoming recipes include:
 - nginx
   - global config template
-  - static website template
 - shorewall
 - vsftp
 - php-fpm
@@ -71,6 +71,7 @@ Here is the recipes included in this gem:
 
 - nginx
   - with config templates for rails app
+  - static website template
 - nodejs
 - postgresql
 - unicorn (integrated with a nginx/railsapp)
@@ -84,7 +85,8 @@ Configuration variables: none
 Tasks:
 - `nginx:install` installs the lastest release from the ppa `ppa:nginx/stable`.
 - `nginx:start/stop/reload` maps to `sudo service nginx start/stop/reload` on the remote machine.
-- `nginx:setup` generates a nginx site configuration for a rails app runs with `unicorn` through unix socket.
+- `nginx:setup:unicorn` generates a nginx site configuration for a rails app runs with `unicorn` through unix socket.
+- `nginx:setup:static` generates a nginx site configuration for static sites. require `domain`, `deploy_to` and `application`.
 
 ### NodeJS
 Default role: `app`
