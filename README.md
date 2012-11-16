@@ -125,7 +125,10 @@ Tasks:
 - `pg:setup` generates remote `database.yml` based on local `database.yml`'s `production` settings.
 - `pg:symlink` creates symbolic for the `database.yml` in the release.
 - `pg:dump` dumps and compresses the application database, store them in the `pg_backup_path`.
-- `pg:restore` prompts and restores selected dumps from the `pg_backup_path`, it defaults to lastest dump.
+- `pg:get` download the remote dump to local `/tmp` directory
+- `pg:put` upload the local dumps in `/tmp` to the remote server
+- `pg:restore:remote` On the remote machine, restores selected dumps from the `pg_backup_path`, it defaults to lastest dump.
+- `pg:restore:local` On the local machine, restores selected dumps from the `/tmp`, it defaults to lastest dump.
 
 ### Unicorn
 This recipes setup unicorn configuration based on current rails application, and generate a `init.d` control scripts to manage the service.
