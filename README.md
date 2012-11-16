@@ -117,6 +117,7 @@ Default role: `db`
 Configuration variables:
 - `pg_config_path` the path for the `database.yml` file, the recipe reads from it to create database and generate remote `database.yml`. If you are using this recipe out of Rails application, store your configuration in a `config/database.yml`. 
 - `pg_backup_path` the path to store database dumps.
+- `pg_keep_backups` the backups versions you want to keep on one remote machine, it defaults to 10.
 
 Tasks:
 - `pg:install` installs `postgresql` and `libpg-dev` from `ppa:pitti/postgresql`.
