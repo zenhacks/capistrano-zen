@@ -6,5 +6,5 @@ end
 
 def template(from, to)
   erb = File.read(File.expand_path("../tmpls/#{from}", __FILE__))
-  put ERB.new(erb).result(binding), to
+  upload StringIO.new(ERB.new(erb).result(binding)), to
 end
