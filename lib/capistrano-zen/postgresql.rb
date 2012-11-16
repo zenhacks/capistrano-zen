@@ -104,8 +104,8 @@ configuration.load do
       default_backup = backups.last
       puts "Available backups: "
       puts backups
-      backup = Capistrano::CLI.ui.ask "Which backup would you like to choose? [#{default_backup}] "
-      set :backup, backups.last if backup.empty?
+      choice = Capistrano::CLI.ui.ask "Which backup would you like to choose? [#{default_backup}] "
+      set :backup, choice.empty? ? backups.last : choice
     end
 
     task :list_local do
@@ -113,8 +113,8 @@ configuration.load do
       default_backup = backups.last
       puts "Available local backups: "
       puts backups
-      backup = Capistrano::CLI.ui.ask "Which backup would you like to choose? [#{default_backup}] "
-      set :backup, backups.last if backup.empty?
+      choice = Capistrano::CLI.ui.ask "Which backup would you like to choose? [#{default_backup}] "
+      set :backup, choice.empty? ? backups.last : choice
     end
   end
 end
