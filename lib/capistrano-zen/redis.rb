@@ -6,21 +6,18 @@ configuration = Capistrano::Configuration.respond_to?(:instance) ?
 
 configuration.load do
   namespace :redis do
-    desc "Install the stable relase of Redis"
-    task :install do
-      [
-        "cd src",
-        "git clone git://github.com/antirez/redis.git /tmp/redis",
-        "cd /tmp/redis && git pull",
-        "cd /tmp/redis && make clean",
-        "cd /tmp/redis && make",
-        "#{sudo} cp /tmp/redis/redis-benchmark /usr/bin/",
-        "#{sudo} cp /tmp/redis/redis-cli /usr/bin/",
-        "#{sudo} cp /tmp/redis/redis-server /usr/bin/",
-        "#{sudo} cp /tmp/redis/redis.conf /etc/",
-        "#{sudo} sed -i 's/daemonize no/daemonize yes/' /etc/redis.conf",
-        "#{sudo} sed -i 's/^pidfile \/var\/run\/redis.pid/pidfile \/tmp\/redis.pid/' /etc/redis.conf"
-      ].each {|cmd| run cmd}
+    desc "Install the latest release of Redis"
+    task :install, roles: :app do
+      run "#{sudo} add-apt-repository -y ppa:chris-lea/redis-server"
+      run "#{sudo} apt-get -y update"
+      run "#{sudo} apt-get -y install redis-server"
+    end
+
+    %w[start stop restart].each do |command|
+      desc "#{command} redis"
+      task command, roles: :web do
+        run "#{sudo} service redis-server #{command}"
+      end
     end
   end
 end
