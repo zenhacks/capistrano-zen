@@ -9,6 +9,7 @@ It provides installation and management recipes for the following service:
 - postgresql
 - unicorn (integrated with a nginx/railsapp)
 - rbenv
+- redis
 
 The upcoming recipes include:
 - nginx
@@ -18,7 +19,6 @@ The upcoming recipes include:
 - php-fpm
 - mysql
 - mongodb
-- redis
 
 `capistrano-zen` is extracted from the deployment procedure at [zenhacks.org](zenhacks.org) for a Rails application so it is designed to work with the structure of a rails application. But most recipes are independent and future development will detach general recipes from a rails application.
 
@@ -97,6 +97,15 @@ Tasks:
 - `nodejs:install` installs `node` and `npm` from the `ppa:chris-lea/node.js`.
 
 The ppa comes from [official wiki](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager).
+
+### Redis
+Default role: `app`
+
+Configuration variables: none
+
+Tasks:
+- `redis:install` installs `node` and `npm` from the `ppa:chris-lea/redis-server`.
+- `redis:start/stop/reload` maps to `sudo service redis start/stop/reload` on the remote machine.
 
 ### Rbenv
 It uses the [rbenv installer](https://github.com/fesplugas/rbenv-installer) to create a `ruby` environment.
