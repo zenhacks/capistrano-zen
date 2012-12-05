@@ -73,10 +73,9 @@ configuration.load do
 
     desc "Dump the application's database to backup path."
     task :dump, roles: :db, only: { primary: true } do
-      # ignore migrations / exclude ownership / clean restore
-      run "pg_dump #{mysql_database} -T '*migrations' -O -c -U #{mysql_user} -h #{mysql_host} | gzip > #{db_backup_path}/#{application}-#{release_name}.sql.gz" do |channel, stream, data|
-        puts data if data.length >= 3
-        channel.send_data("#{mysql_password}\n") if data.include? 'Password'
+      run "mysqldump -u #{mysql_user} -p --host=#{mysql_host} #{mysql_database} --add-drop-table | gzip > #{db_backup_path}/mysql.#{application}-#{release_name}.sql.gz" do |ch, stream, out|
+        ch.send_data "#{mysql_password}\n" if out =~ /^Enter password:/
+        puts out if out.length >= 3
       end
     end
 
