@@ -73,7 +73,7 @@ configuration.load do
 
     desc "Dump the application's database to backup path."
     task :dump, roles: :db, only: { primary: true } do
-      run "mysqldump -u #{mysql_user} -p --host=#{mysql_host} #{mysql_database} --add-drop-table | gzip > #{db_backup_path}/mysql.#{application}-#{release_name}.sql.gz" do |ch, stream, out|
+      run "mysqldump -u #{mysql_user} -p --host=#{mysql_host} #{mysql_database} --add-drop-table | gzip > #{db_backup_path}/#{application}-#{release_name}.mysql.sql.gz" do |ch, stream, out|
         ch.send_data "#{mysql_password}\n" if out =~ /^Enter password:/
         puts out if out.length >= 3
       end

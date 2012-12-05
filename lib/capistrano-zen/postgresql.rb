@@ -62,7 +62,7 @@ configuration.load do
     desc "Dump the application's database to backup path."
     task :dump, roles: :db, only: { primary: true } do
       # ignore migrations / exclude ownership / clean restore
-      run "pg_dump #{psql_database} -T '*migrations' -O -c -U #{psql_user} -h #{psql_host} | gzip > #{db_backup_path}/#{application}-#{release_name}.sql.gz" do |channel, stream, data|
+      run "pg_dump #{psql_database} -T '*migrations' -O -c -U #{psql_user} -h #{psql_host} | gzip > #{db_backup_path}/#{application}-#{release_name}.pg.sql.gz" do |channel, stream, data|
         puts data if data.length >= 3
         channel.send_data("#{psql_password}\n") if data.include? 'Password'
       end
