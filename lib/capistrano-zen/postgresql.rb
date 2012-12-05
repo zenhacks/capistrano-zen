@@ -113,7 +113,7 @@ configuration.load do
 
     # private tasks
     task :list_remote, roles: :db, only: { primary: true } do
-      backups = capture("ls -x #{db_backup_path}").split.sort
+      backups = capture("ls -x #{db_backup_path} | grep pg").split.sort
       default_backup = backups.last
       puts "Available backups: "
       puts backups
@@ -122,7 +122,7 @@ configuration.load do
     end
 
     task :list_local do
-      backups = `ls -x /tmp | grep -e '.sql.gz$'`.split.sort
+      backups = `ls -x /tmp | grep -e '.sql.gz$' | grep pg`.split.sort
       default_backup = backups.last
       puts "Available local backups: "
       puts backups
