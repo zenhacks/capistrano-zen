@@ -99,7 +99,7 @@ configuration.load do
 
     task :cleanup, roles: :db, only: { primary: true } do
       count = fetch(:pg_keep_backups, 10).to_i
-      local_backups = capture("ls -xt #{db_backup_path}").split.reverse
+      local_backups = capture("ls -xt #{db_backup_path} | grep pg").split.reverse
       if count >= local_backups.length
         logger.important "no old backups to clean up"
       else
