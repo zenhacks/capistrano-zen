@@ -73,9 +73,9 @@ configuration.load do
 
     desc "Dump the application's database to backup path."
     task :dump, roles: :db, only: { primary: true } do
-      run "mysqldump -u #{mysql_user} -p --host=#{mysql_host} #{mysql_database} --add-drop-table | gzip > #{db_backup_path}/#{application}-#{release_name}.mysql.sql.gz" do |ch, stream, out|
-        ch.send_data "#{mysql_password}\n" if out =~ /^Enter password:/
-        puts out if out.length >= 3
+      run "mysqldump -u #{mysql_user} -p --host=#{mysql_host} #{mysql_database} --add-drop-table | gzip > #{db_backup_path}/#{application}-#{release_name}.mysql.sql.gz" do |channel, stream, data|
+        puts data if data.length >= 3
+        channel.send_data("#{mysql_password}\n") if data =~ /password/
       end
     end
 
@@ -95,22 +95,25 @@ configuration.load do
       desc "Restore the remote database from dump files."
       task :remote, roles: :db, only: { primary: true } do
         list_remote
-        run "gunzip -c #{db_backup_path}/#{backup} | mysql -d #{mysql_database} -U #{mysql_user} -h #{mysql_host}" do |channel, stream, data|
+        run "gunzip -c #{db_backup_path}/#{backup} | mysql -u #{mysql_user} -p -h #{mysql_host} #{mysql_database} " do |channel, stream, data|
           puts data if data.length >= 3
-          channel.send_data("#{mysql_password}\n") if data.include? 'Password'
+          channel.send_data("#{mysql_password}\n") if data =~ /password/
         end
       end
 
       desc "Restore the local database from dump files."
       task :local do
         list_local
-        run_locally "gunzip -c /tmp/#{backup} | mysql -d #{mysql_database_dev} -U #{mysql_user_dev} -h #{mysql_host_dev}"
+        run_locally "gunzip -c /tmp/#{backup} | mysql -u -p #{mysql_user_dev} -h #{mysql_host_dev}" do |channel, stream, data|
+          puts data if data.length >= 3
+          channel.send_data("#{mysql_password}\n") if data =~ /password/
+        end
       end
     end
 
     task :cleanup, roles: :db, only: { primary: true } do
       count = fetch(:pg_keep_backups, 10).to_i
-      local_backups = capture("ls -xt #{db_backup_path}").split.reverse
+      local_backups = capture("ls -xt #{db_backup_path} | grep mysql").split.reverse
       if count >= local_backups.length
         logger.important "no old backups to clean up"
       else
@@ -124,7 +127,7 @@ configuration.load do
 
     # private tasks
     task :list_remote, roles: :db, only: { primary: true } do
-      backups = capture("ls -x #{db_backup_path}").split.sort
+      backups = capture("ls -x #{db_backup_path} | grep mysql").split.sort
       default_backup = backups.last
       puts "Available backups: "
       puts backups
@@ -133,7 +136,7 @@ configuration.load do
     end
 
     task :list_local do
-      backups = `ls -x /tmp | grep -e '.sql.gz$'`.split.sort
+      backups = `ls -x /tmp | grep -e '.sql.gz$' | grep mysql`.split.sort
       default_backup = backups.last
       puts "Available local backups: "
       puts backups
