@@ -7,10 +7,10 @@ configuration = Capistrano::Configuration.respond_to?(:instance) ?
 
 configuration.load do
 
-  _cset(:pg_config_path) { abort "[Error] posgtresql recipes need `pg_config_path` to find the database.yml file." }
-  _cset(:pg_backup_path) { abort "[Error] posgtresql recipes need `pg_backup_path` to execute backups." }
+  _cset(:db_config_path) { abort "[Error] posgtresql recipes need `db_config_path` to find the database.yml file." }
+  _cset(:db_backup_path) { abort "[Error] posgtresql recipes need `db_backup_path` to execute backups." }
 
-  DB_FILE_PATH = "#{pg_config_path}/database.yml"
+  DB_FILE_PATH = "#{db_config_path}/database.yml"
   DBCONFIG = YAML.load_file(DB_FILE_PATH)
 
   _cset(:psql_host) { DBCONFIG['production']['host'] }
@@ -49,9 +49,9 @@ configuration.load do
       run "mkdir -p #{shared_path}/config"
       template "postgresql.yml.erb", "#{shared_path}/config/database.yml"
       # init backup directory
-      run "#{sudo} mkdir -p #{pg_backup_path}"
-      run "#{sudo} chown :#{group} #{pg_backup_path}"
-      run "#{sudo} chmod g+w #{pg_backup_path}"
+      run "#{sudo} mkdir -p #{db_backup_path}"
+      run "#{sudo} chown :#{group} #{db_backup_path}"
+      run "#{sudo} chmod g+w #{db_backup_path}"
     end
 
     desc "Symlink the database.yml file into latest release"
@@ -62,7 +62,7 @@ configuration.load do
     desc "Dump the application's database to backup path."
     task :dump, roles: :db, only: { primary: true } do
       # ignore migrations / exclude ownership / clean restore
-      run "pg_dump #{psql_database} -T '*migrations' -O -c -U #{psql_user} -h #{psql_host} | gzip > #{pg_backup_path}/#{application}-#{release_name}.sql.gz" do |channel, stream, data|
+      run "pg_dump #{psql_database} -T '*migrations' -O -c -U #{psql_user} -h #{psql_host} | gzip > #{db_backup_path}/#{application}-#{release_name}.sql.gz" do |channel, stream, data|
         puts data if data.length >= 3
         channel.send_data("#{psql_password}\n") if data.include? 'Password'
       end
@@ -71,20 +71,20 @@ configuration.load do
     desc "Get the remote dump to local /tmp directory."
     task :get, roles: :db, only: { primary: true } do
       list_remote
-      download "#{pg_backup_path}/#{backup}", "/tmp/#{backup}", :once => true
+      download "#{db_backup_path}/#{backup}", "/tmp/#{backup}", :once => true
     end
 
     desc "Put the local dump in /tmp to remote backups."
     task :put, roles: :db, only: { primary: true } do
       list_local
-      upload "/tmp/#{backup}", "#{pg_backup_path}/#{backup}"
+      upload "/tmp/#{backup}", "#{db_backup_path}/#{backup}"
     end
 
     namespace :restore do
       desc "Restore the remote database from dump files."
       task :remote, roles: :db, only: { primary: true } do
         list_remote
-        run "gunzip -c #{pg_backup_path}/#{backup} | psql -d #{psql_database} -U #{psql_user} -h #{psql_host}" do |channel, stream, data|
+        run "gunzip -c #{db_backup_path}/#{backup} | psql -d #{psql_database} -U #{psql_user} -h #{psql_host}" do |channel, stream, data|
           puts data if data.length >= 3
           channel.send_data("#{psql_password}\n") if data.include? 'Password'
         end
@@ -99,13 +99,13 @@ configuration.load do
 
     task :cleanup, roles: :db, only: { primary: true } do
       count = fetch(:pg_keep_backups, 10).to_i
-      local_backups = capture("ls -xt #{pg_backup_path}").split.reverse
+      local_backups = capture("ls -xt #{db_backup_path}").split.reverse
       if count >= local_backups.length
         logger.important "no old backups to clean up"
       else
         logger.info "keeping #{count} of #{local_backups.length} backups"
         directories = (local_backups - local_backups.last(count)).map { |release|
-          File.join(pg_backup_path, release) }.join(" ")
+          File.join(db_backup_path, release) }.join(" ")
 
         try_sudo "rm -rf #{directories}"
       end
@@ -113,7 +113,7 @@ configuration.load do
 
     # private tasks
     task :list_remote, roles: :db, only: { primary: true } do
-      backups = capture("ls -x #{pg_backup_path}").split.sort
+      backups = capture("ls -x #{db_backup_path}").split.sort
       default_backup = backups.last
       puts "Available backups: "
       puts backups
