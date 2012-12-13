@@ -5,7 +5,7 @@ configuration = Capistrano::Configuration.respond_to?(:instance) ?
   Capistrano.configuration(:must_exist)
 
 configuration.load do
-  namespace :redis, role: :app do
+  namespace :redis do
     desc "Install the latest release of Redis"
     task :install, roles: :app do
       run "#{sudo} add-apt-repository -y ppa:chris-lea/redis-server"
