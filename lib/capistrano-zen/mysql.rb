@@ -66,11 +66,6 @@ configuration.load do
       run "#{sudo} chmod g+w #{db_backup_path}"
     end
 
-    desc "Symlink the database.yml file into latest release"
-    task :symlink, roles: :app do
-      run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
-    end
-
     desc "Dump the application's database to backup path."
     task :dump, roles: :db, only: { primary: true } do
       run "mysqldump -u #{mysql_user} -p --host=#{mysql_host} #{mysql_database} --add-drop-table | gzip > #{db_backup_path}/#{application}-#{release_name}.mysql.sql.gz" do |channel, stream, data|
