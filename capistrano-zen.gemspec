@@ -21,4 +21,5 @@ Gem::Specification.new do |gem|
   ]
 
   gem.add_dependency "capistrano", ">= 2.5.3"
+  gem.add_development_dependency "rake"
 end
