@@ -7,7 +7,7 @@ configuration = Capistrano::Configuration.respond_to?(:instance) ?
 
 configuration.load do
 
-  _cset(:db_config_path) { abort "[Error] posgtresql recipes need `db_config_path` to find the database.yml file." }
+  _cset(:config_path) { abort "[Error] posgtresql recipes need `config_path` to find the database.yml file." }
   _cset(:db_backup_path) { abort "[Error] posgtresql recipes need `db_backup_path` to execute backups." }
 
   DB_FILE_PATH = "#{db_config_path}/database.yml"
