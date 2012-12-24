@@ -15,13 +15,17 @@ configuration.load do
     end
 
     desc "Symlink the database.yml file into latest release"
-    task :db_symlink, roles: :app do
-      run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+    namespace :db do
+      task :symlink, roles: :app do
+        run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+      end
     end
 
     desc "Symlink the application.yml file into latest release"
-    task :appenv_symlink, roles: :app do
-      run "ln -nfs #{shared_path}/config/application.yml #{release_path}/config/application.yml"
+    namespace :env do
+      task :symlink, roles: :app do
+        run "ln -nfs #{shared_path}/config/application.yml #{release_path}/config/application.yml"
+      end
     end
   end
 end
