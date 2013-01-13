@@ -1,4 +1,4 @@
-RAILS_ENV = ENV['RAILS_ENV'] || 'production'
+RAILS_ENV = ENV['RAILS_ENV'] || <%= rails_env %>
 
 # unicorn workers
 worker_processes <%= unicorn_workers %>
