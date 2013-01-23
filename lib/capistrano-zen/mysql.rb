@@ -49,7 +49,9 @@ configuration.load do
     desc "Reset the database and role for this application."
     task :reset, roles: :db, only: { primary: true } do
       # drop the database and role
+      # http://bugs.mysql.com/bug.php?id=19166
       sql = <<-SQL
+      GRANT USAGE ON *.* TO #{mysql_user}@'localhost';
       DROP USER #{mysql_user}@localhost;
       DROP DATABASE IF EXISTS #{mysql_database};
       SQL
