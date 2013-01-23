@@ -37,9 +37,9 @@ configuration.load do
 
     desc "Create a database for this application."
     task :init, roles: :db, only: { primary: true } do
+      # User will be created if not existed
       sql = <<-SQL
       CREATE DATABASE #{mysql_database};
-      CREATE USER #{mysql_user} IDENTIFIED BY PASSWORD #{mysql_password};
       GRANT ALL PRIVILEGES ON #{mysql_database}.* TO #{mysql_user}@localhost IDENTIFIED BY '#{mysql_password}';
       SQL
 
