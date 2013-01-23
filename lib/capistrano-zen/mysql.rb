@@ -143,6 +143,7 @@ configuration.load do
     def run_sql(sql)
       run "mysql -u root -p --execute=\"#{sql}\"" do |channel, stream, data|
         if data =~ /^Enter password:/
+          puts data if data.length >= 3
           pass = Capistrano::CLI.password_prompt "Enter database password for 'root':"
           channel.send_data "#{pass}\n"
         end
