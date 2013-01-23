@@ -39,6 +39,7 @@ configuration.load do
     task :init, roles: :db, only: { primary: true } do
       sql = <<-SQL
       CREATE DATABASE #{mysql_database};
+      CREATE USER #{mysql_user} IDENTIFIED BY PASSWORD #{mysql_password};
       GRANT ALL PRIVILEGES ON #{mysql_database}.* TO #{mysql_user}@localhost IDENTIFIED BY '#{mysql_password}';
       SQL
 
