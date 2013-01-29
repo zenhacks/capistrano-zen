@@ -3,14 +3,17 @@ load 'deploy'
 load 'deploy/assets'
 
 # the database.yml path
-set :pg_config_path, File.expand_path(File.dirname(__FILE__), 'config')
+set :config_path, File.expand_path(File.dirname(__FILE__), 'config')
+set :db_backup_path, '/var/backups/db'
 
 # load the recipes
 require 'capistrano-zen/utils'
 require 'capistrano-zen/nginx'
+require 'capistrano-zen/nodejs'
 require 'capistrano-zen/postgresql'
 require 'capistrano-zen/rbenv'
 require 'capistrano-zen/unicorn'
+require 'capistrano-zen/config'
 
 # Use Git as Version Control System
 set :scm, :git
@@ -27,12 +30,15 @@ set :application, 'my_application'
 
 set :domain, "domain.com"
 
+set :unicorn_workers, 1
+
+set :rails_env, "production"
+
 server 'domain.com', :web, :app, :db, :primary => true
 
 set :user, 'deploy'
 set :group, 'deploy'
 set :deploy_to, "/home/#{user}/repositories/#{application}-production"
-
 
 ## Deploy Dependencies
 after "deploy:install",
@@ -48,4 +54,7 @@ after "deploy:setup",
   "pg:init",
   "unicorn:setup"
 
-after "deploy:finalize_update", "pg:symlink"
+# dump database before a new successful release
+before "config:db:symlink", "pg:dump"
+after "deploy:finalize_update",
+  "config:db:symlink",

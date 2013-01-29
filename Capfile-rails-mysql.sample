@@ -1,0 +1,60 @@
+# default capistrano tasks
+load 'deploy'
+load 'deploy/assets'
+
+# the database.yml path
+set :config_path, File.expand_path(File.dirname(__FILE__), 'config')
+set :db_backup_path, '/var/backups/db'
+
+# load the recipes
+require 'capistrano-zen/utils'
+require 'capistrano-zen/nginx'
+require 'capistrano-zen/nodejs'
+require 'capistrano-zen/mysql'
+require 'capistrano-zen/rbenv'
+require 'capistrano-zen/unicorn'
+require 'capistrano-zen/config'
+
+# Use Git as Version Control System
+set :scm, :git
+set :repository, "git@github.com:zenhacks/some_application.git"
+set :branch, 'master'
+
+# enable prompt for password
+default_run_options[:pty] = true
+
+# access github.com using as the local user
+ssh_options[:forward_agent] = true
+
+set :application, 'my_application'
+
+set :domain, "domain.com"
+
+set :unicorn_workers, 1
+
+set :rails_env, "production"
+
+server 'domain.com', :web, :app, :db, :primary => true
+
+set :user, 'deploy'
+set :group, 'deploy'
+set :deploy_to, "/home/#{user}/repositories/#{application}-production"
+
+## Deploy Dependencies
+after "deploy:install",
+  "nginx:install",
+  "nodejs:install",
+  "rbenv:install",
+  "dev_lib:install",
+  "mysql:install"
+
+after "deploy:setup",
+  "nginx:setup",
+  "mysql:setup",
+  "mysql:init",
+  "unicorn:setup"
+
+# dump database before a new successful release
+before "config:db:symlink", "mysql:dump"
+after "deploy:finalize_update",
+  "config:db:symlink"
