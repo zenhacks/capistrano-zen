@@ -7,6 +7,7 @@ It provides installation and management recipes for the following service:
   - static website template
 - nodejs
 - postgresql
+- mysql
 - unicorn (integrated with a nginx/railsapp)
 - rbenv
 - redis
@@ -17,7 +18,6 @@ The upcoming recipes include:
 - shorewall
 - vsftp
 - php-fpm
-- mysql
 - mongodb
 
 `capistrano-zen` is extracted from the deployment procedure at [zenhacks.org](zenhacks.org) for a Rails application so it is designed to work with the structure of a rails application. But most recipes are independent and future development will detach general recipes from a rails application.
@@ -31,7 +31,7 @@ The upcoming recipes include:
 
 You will need to declare those in your own capistrano config file such as `Capfile` or `config/deploy.rb`.
 
-The gem includes some sample files to start with `Capfile-rails.sample`.
+The gem includes some sample files to start with `Capfile-rails-****.sample` for various deployment-prove usage.
 
 ## Installation
 
@@ -74,6 +74,7 @@ Here is the recipes included in this gem:
   - static website template
 - nodejs
 - postgresql
+- mysql
 - unicorn (integrated with a nginx/railsapp)
 - rbenv
 
@@ -127,7 +128,7 @@ Default role: `db`
 
 Configuration variables:
 - `config_path` the path for the `database.yml` file, the recipe reads from it to create database and generate remote `database.yml`. If you are using this recipe out of Rails application, store your configuration in a `config/database.yml`. 
-- `pg_backup_path` the path to store database dumps.
+- `db_backup_path` the path to store database dumps.
 - `pg_keep_backups` the backups versions you want to keep on one remote machine, it defaults to 10.
 
 Tasks:
@@ -135,13 +136,16 @@ Tasks:
 - `pg:reset` drops the databases and roles with the same names as in the application.
 - `pg:init` generates roles and databases for the rails application.
 - `pg:setup` generates remote `database.yml` based on local `database.yml`'s `production` settings.
-- `pg:symlink` creates symbolic for the `database.yml` in the release.
-- `pg:dump` dumps and compresses the application database, store them in the `pg_backup_path`.
+- `config:db:symlink` creates symbolic for the `database.yml` in the release.
+- `pg:dump` dumps and compresses the application database, store them in the `db_backup_path`.
 - `pg:get` download the remote dump to local `/tmp` directory
 - `pg:put` upload the local dumps in `/tmp` to the remote server
-- `pg:restore:remote` On the remote machine, restores selected dumps from the `pg_backup_path`, it defaults to lastest dump.
+- `pg:restore:remote` On the remote machine, restores selected dumps from the `db_backup_path`, it defaults to lastest dump.
 - `pg:restore:local` On the local machine, restores selected dumps from the `/tmp`, it defaults to lastest dump.
 - `pg:cleanup` cleans up old backups while keep `pg_keep_backups` numbers of backups.
+
+### MySQL
+Most `capistrano-zen/mysql` has similar tasks as Postgresql.
 
 ### Unicorn
 This recipes setup unicorn configuration based on current rails application, and generate a `init.d` control scripts to manage the service.
