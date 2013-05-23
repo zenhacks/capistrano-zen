@@ -68,6 +68,7 @@ after_fork do |server, worker|
   # on demand, so the master never opens a socket
 
 
+  defined?(Analytics) and Analytics.init secret: ENV['SEGMENTIO_SECRET']
   ##
   # Unicorn master is started as root, which is fine, but let's
   # drop the workers to deploy:deploy
