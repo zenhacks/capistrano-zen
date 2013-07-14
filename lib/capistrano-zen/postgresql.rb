@@ -117,7 +117,7 @@ configuration.load do
     end
 
     task :list_local do
-      backups = `ls -x /tmp | grep -e '.sql.gz$' | grep pg`.split.sort
+      backups = `ls -1 /tmp | grep -e '.sql.gz$' | grep pg`.split.sort
       default_backup = backups.last
       puts "Available local backups: "
       puts backups
