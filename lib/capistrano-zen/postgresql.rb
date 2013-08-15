@@ -33,7 +33,7 @@ configuration.load do
 
     desc "Create a database for this application."
     task :init, roles: :db, only: { primary: true } do
-      run %Q{#{sudo} -u postgres psql -c "CREATE USER #{psql_user} WITH PASSWORD '#{psql_password}';"}
+      run %Q{#{sudo} -u postgres psql -c "CREATE USER #{psql_user} WITH PASSWORD '#{psql_password}'; ALTER USER #{psql_user} CREATEDB;"}
       run %Q{#{sudo} -u postgres psql -c "CREATE DATABASE #{psql_database} OWNER #{psql_user};"}
     end
 
