@@ -5,8 +5,8 @@ server {
   gzip_static on;
   index index.php;
 
-  access_log  /var/log/nginx/<%= application %>-access.log;
-  error_log  /var/log/nginx/<%= application %>-error.log;
+  access_log  /var/log/nginx/<%= application %>/access.log;
+  error_log  /var/log/nginx/<%= application %>/error.log;
 
   location = /favicon.ico {
     log_not_found off;
