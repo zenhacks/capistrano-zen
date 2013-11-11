@@ -18,14 +18,24 @@ configuration.load do
       desc "Setup nginx configuration for unicorn application"
       task :unicorn, roles: :web do
         template "nginx_unicorn.erb", "/tmp/nginx_conf"
-        run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-enabled/#{application}"
+        run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-available/#{application}"
+        run "#{sudo} ln -s /etc/nginx/sites-available/#{application}  /etc/nginx/sites-enabled/"
         restart
       end
 
       desc "Setup nginx configuration for static website"
       task :static, roles: :web do
         template "nginx_static.erb", "/tmp/nginx_conf"
-        run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-enabled/#{application}"
+        run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-available/#{application}"
+        run "#{sudo} ln -s /etc/nginx/sites-available/#{application}  /etc/nginx/sites-enabled/"
+        restart
+      end
+
+      desc "Setup nginx configuration for wordpress website"
+      task :wordpress, roles: :web do
+        template "nginx_wordpress.erb", "/tmp/nginx_conf"
+        run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-available/#{application}"
+        run "#{sudo} ln -s /etc/nginx/sites-available/#{application}  /etc/nginx/sites-enabled/"
         restart
       end
     end

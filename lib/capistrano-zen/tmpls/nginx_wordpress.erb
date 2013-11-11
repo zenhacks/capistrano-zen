@@ -1,0 +1,49 @@
+server {
+  listen   80;
+  server_name <%= domain %>;
+  root <%= deploy_to %>;
+  gzip_static on;
+  index index.php;
+
+  access_log  /var/log/nginx/<%= application %>-access.log;
+  error_log  /var/log/nginx/<%= application %>-error.log;
+
+  location = /favicon.ico {
+    log_not_found off;
+    access_log off;
+  }
+
+  location = /robots.txt {
+    allow all;
+    log_not_found off;
+    access_log off;
+  }
+
+  ## Images and static content is treated different
+  location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
+   access_log        off;
+   expires           360d;
+  }
+
+  location ~ /\.ht {
+   deny  all;
+  }
+
+  location / {
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+  location ~ .*\.(php|php5)?$
+  {
+    try_files $uri $uri/ /index.php?$args;
+    include /etc/nginx/fastcgi_params;
+    fastcgi_pass unix:/var/run/php5-fpm.sock;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME /home/deployer/sites/<%= application %>$fastcgi_script_name;
+  }
+
+  if (!-e $request_filename) {
+   rewrite ^(.+)$ /index.php?q=$1 last;
+  }
+}
+
