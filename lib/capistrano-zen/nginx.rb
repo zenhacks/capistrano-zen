@@ -19,7 +19,7 @@ configuration.load do
       task :unicorn, roles: :web do
         template "nginx_unicorn.erb", "/tmp/nginx_conf"
         run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-available/#{application}"
-        run "#{sudo} ln -s /etc/nginx/sites-available/#{application}  /etc/nginx/sites-enabled/"
+        link
         restart
       end
 
@@ -27,7 +27,7 @@ configuration.load do
       task :static, roles: :web do
         template "nginx_static.erb", "/tmp/nginx_conf"
         run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-available/#{application}"
-        run "#{sudo} ln -s /etc/nginx/sites-available/#{application}  /etc/nginx/sites-enabled/"
+        link
         restart
       end
 
@@ -35,8 +35,14 @@ configuration.load do
       task :wordpress, roles: :web do
         template "nginx_wordpress.erb", "/tmp/nginx_conf"
         run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-available/#{application}"
-        run "#{sudo} ln -s /etc/nginx/sites-available/#{application}  /etc/nginx/sites-enabled/"
+        link
         restart
+      end
+
+      desc "create symbolic link"
+      task :link do
+        run "#{sudo} rm /etc/nginx/sites-enabled/#{application}"
+        run "#{sudo} ln -s /etc/nginx/sites-available/#{application}  /etc/nginx/sites-enabled/"
       end
     end
 
