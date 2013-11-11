@@ -9,7 +9,7 @@ configuration.load do
     desc "upload the configuration to remote server"
     task :config, roles: :web do
       template "wp-config.php.erb", "/tmp/wp-config.php"
-      run "#{sudo} mv /tmp/wp-config.php #{deploy-to}/"
+      run "#{sudo} mv /tmp/wp-config.php #{deploy_to}/"
     end
   end
 end
