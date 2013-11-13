@@ -39,7 +39,7 @@ configuration.load do
     task :init, roles: :db, only: { primary: true } do
       # User will be created if not existed
       sql = <<-SQL
-      CREATE DATABASE #{mysql_database} DEFAULT CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`;
+      CREATE DATABASE #{mysql_database} DEFAULT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci';
       GRANT ALL PRIVILEGES ON #{mysql_database}.* TO #{mysql_user}@localhost IDENTIFIED BY '#{mysql_password}';
       SQL
 
