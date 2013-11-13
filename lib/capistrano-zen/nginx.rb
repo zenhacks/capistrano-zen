@@ -41,7 +41,7 @@ configuration.load do
 
       desc "create symbolic link"
       task :link do
-        run "#{sudo} rm /etc/nginx/sites-enabled/#{application}"
+        run "[ -f '/etc/nginx/sites-enabled/#{application}' ] && #{sudo} rm /etc/nginx/sites-enabled/#{application} || echo 'link file not exist, creating...'"
         run "#{sudo} ln -s /etc/nginx/sites-available/#{application}  /etc/nginx/sites-enabled/"
       end
     end
