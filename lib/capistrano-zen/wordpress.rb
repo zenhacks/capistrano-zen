@@ -1,3 +1,4 @@
+require 'securerandom'
 require 'capistrano-zen/base'
 
 configuration = Capistrano::Configuration.respond_to?(:instance) ?
@@ -15,5 +16,5 @@ configuration.load do
 end
 
 def random_salts
-  ('.'..'z').to_a.shuffle[0,60].join
+  SecureRandom.urlsafe_base64(60)
 end
